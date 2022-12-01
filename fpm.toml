@@ -1,0 +1,14 @@
+name = "aoc-22"
+version = "0.1.0"
+license = "license"
+author = "Ludovico Nicotina"
+maintainer = "ludovico.nicotina@gmail.com"
+copyright = "Copyright 2022, Ludovico Nicotina"
+[build]
+auto-executables = true
+auto-tests = true
+auto-examples = true
+[install]
+library = false
+[dependencies]
+stdlib = { git="https://github.com/fortran-lang/stdlib", branch="stdlib-fpm" }
