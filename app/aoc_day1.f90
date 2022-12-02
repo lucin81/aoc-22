@@ -1,4 +1,5 @@
 program main
+  !! Solve the part 1 and part 2 puzzles of AOC-22 
   use m_kinds
   use m_io, only: read_txt_1c
   use stdlib_sorting, only: sort

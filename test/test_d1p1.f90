@@ -1,7 +1,6 @@
 program test_d1p1
   use m_kinds
   use m_io, only: nrows, read_txt_1c
-  use stdlib_sorting, only: sort
   implicit none
 
   logical :: res 

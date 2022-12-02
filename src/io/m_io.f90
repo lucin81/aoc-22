@@ -7,6 +7,9 @@ module m_io
 contains
 
   integer(kind=i4) function nrows(fname)
+    !! Returns the number of rows in a formatted file
+
+    !> The file name for which we need the row count
     character(len=*), intent(in) :: fname
     integer(kind=i4) :: iu
 
@@ -20,7 +23,11 @@ contains
   end function nrows
 
   function read_txt_1c(fname) result(res)
+    !! Reads a 4 bytes integer from a single column text file
+
+    !> File name to read 
     character(len=*), intent(in) :: fname
+    !> Resulting vector
     integer(kind=i4), allocatable :: res(:)
     integer(kind=i4) :: iu, i
     
