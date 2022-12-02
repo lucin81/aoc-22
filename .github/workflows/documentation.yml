@@ -23,3 +23,18 @@ jobs:
     - name: Build documentation
       run: |
         ford doc/ford_main.md
+
+    - name: Upload documentation
+      uses: actions/upload-artifact@v2
+      with: 
+        name: documentation
+        path: doc/ford_doc
+        if-no-files-found: error 
+    
+    - name: Deploy documentation
+      uses: JamesIves/github-pages-deploy-action@v4.1.0
+      if: ${{ github.event.name == 'push' && github.ref == 'main' }}
+      with:
+        branch: gh-pages
+        folder: doc/ford_doc
+      
