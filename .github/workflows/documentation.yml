@@ -1,0 +1,25 @@
+name: Build documentation
+
+on: [push, pull_request]
+
+jobs: 
+  documentation:
+    runs-on: ubuntu-22.04
+
+    env: 
+      FC: gfortran
+      GCC_V: 12
+
+    steps: 
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt install -y gfortran-${GCC_V} python3-dev graphviz
+        sudo pip install ford markdown==3.3.4
+
+    - name: Build documentation
+      run: |
+        ford doc/ford_main.md
