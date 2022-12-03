@@ -26,12 +26,12 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Install dependencies ubuntu
-      if: contains(matrix.os, 'ubuntu')
-      run: |
-        sudo apt-get update
-        sudo apt install -y gfortran-${GCC_V}
-        sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-${GCC_V} 100
+    # - name: Install dependencies ubuntu
+    #   if: contains(matrix.os, 'ubuntu')
+    #   run: |
+    #     sudo apt-get update
+    #     sudo apt install -y gfortran-${GCC_V}
+    #     sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-${GCC_V} 100
 
     - name: Build and test on Ubuntu
       if: contains(matrix.os, 'ubuntu')

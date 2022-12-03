@@ -36,9 +36,9 @@ jobs:
         name: documentation
         path: doc/ford_doc
         if-no-files-found: error 
-    
+        
     - name: Deploy documentation
-      uses: JamesIves/github-pages-deploy-action@v4.1.0
+      uses: JamesIves/github-pages-deploy-action@v4
       if: ${{ github.event.name == 'push' && github.ref == 'main' }}
       with:
         branch: gh-pages
