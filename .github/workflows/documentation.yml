@@ -1,0 +1,46 @@
+name: Build documentation
+
+on: 
+  push: 
+    branches: 
+    - main
+  pull_request: 
+    branches: 
+    - main
+
+jobs: 
+  documentation:
+    runs-on: ubuntu-22.04
+
+    env: 
+      FC: gfortran
+      GCC_V: 12
+
+    steps: 
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt install -y gfortran-${GCC_V} python3-dev graphviz
+        sudo pip install ford markdown==3.3.4
+
+    - name: Build documentation
+      run: |
+        ford doc/ford_main.md
+
+    - name: Upload documentation
+      uses: actions/upload-artifact@v2
+      with: 
+        name: documentation
+        path: doc/ford_doc
+        if-no-files-found: error 
+        
+    - name: Deploy documentation
+      uses: JamesIves/github-pages-deploy-action@v4
+      if: ${{ github.event.name == 'push' && github.ref == 'main' }}
+      with:
+        branch: gh-pages
+        folder: doc/ford_doc
+      
