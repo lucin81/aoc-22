@@ -3,7 +3,7 @@ module m_io
   implicit none
   private
 
-  public :: nrows, read_txt_1c
+  public :: nrows, read_txt_1c, read_txt_2c
 contains
 
   integer(kind=i4) function nrows(fname)
@@ -36,4 +36,21 @@ contains
       read (iu, '(I10)') res
     close(iu)
   end function read_txt_1c
+
+  function read_txt_2c(fname) result(res)
+    !! Reads a 2 single character columns from a text file
+
+    !> File name to read 
+    character(len=*), intent(in) :: fname
+    !> Resulting vector
+    character(len=1), allocatable :: res(:,:), tmp(:,:)
+    integer(kind=i4) :: iu, i, nr
+
+    nr = nrows(fname)
+    allocate(tmp(2, nr))
+    open (newunit=iu, file=trim(fname), action='read')
+      read (iu, *) tmp
+    close(iu)
+    res = transpose(tmp)
+  end function read_txt_2c
 end module m_io
