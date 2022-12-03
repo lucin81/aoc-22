@@ -9,8 +9,8 @@ display:  public
           private
 sort: permission-alpha
 output_dir: ../doc/ford_doc
-graph: true
-search: true
+graph: false
+search: false
 extra_mods: iso_fortran_env: "https://gcc.gnu.org/onlinedocs/gfortran/ISO_005fFORTRAN_005fENV.html"
 license: MIT
 ---
