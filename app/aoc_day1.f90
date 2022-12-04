@@ -1,5 +1,5 @@
 program main
-  !! Solve the part 1 and part 2 puzzles of AOC-22 
+  !! Solve the day 1 puzzles of AOC-22 
   use m_kinds
   use m_io, only: read_txt_1c
   use stdlib_sorting, only: sort
@@ -23,9 +23,9 @@ program main
     endif
   enddo 
 
-  print*, "Anser part 1 =", maxval(calories_per_elf)
+  print*, "Answer day 1 part 1 =", maxval(calories_per_elf)
 
   call sort(calories_per_elf, reverse=.true.)
 
-  print*, "Answer part 2 =", sum(calories_per_elf(1:3))
+  print*, "Answer day 1 part 2 =", sum(calories_per_elf(1:3))
 end program main
