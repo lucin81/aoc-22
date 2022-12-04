@@ -1,6 +1,6 @@
 program test_io
   use m_kinds
-  use m_io, only: nrows, read_txt_1c, read_txt_2c
+  use m_io, only: nrows, read_txt_1c, read_txt_2c, max_string_len, read_txt_char_array
   implicit none
 
   logical :: res, overall_res
@@ -27,6 +27,42 @@ program test_io
     endif
   end block 
   test_name = 'Can read single column integer with read_txt_1c'
+  print*, test_name, res
+  overall_res = overall_res .and. res
+
+  block 
+    integer(kind=i4) :: expected, actual
+    
+    expected = 32
+
+    actual = max_string_len('data/test/d3p1.txt')
+    res = expected == actual
+    if (.not. res) then 
+      print*, "Expected=",expected 
+      print*, "Actual=",actual
+    endif
+  end block 
+  test_name = 'Can compute the length of the longest string in a text file'
+  print*, test_name, res
+  overall_res = overall_res .and. res
+
+
+  block 
+    character(len=:), allocatable :: expected, actual
+    character(len=:), allocatable :: tmp(:)
+    
+    allocate(character(len=32) :: tmp(6))
+    tmp = read_txt_char_array('data/test/d3p1.txt', 32, 6)
+    actual = tmp(3)
+    expected = 'PmmdzqPrVvPwwTWBwg'
+
+    res = expected == actual
+    if (.not. res) then 
+      print*, "Expected=",expected 
+      print*, "Actual=",actual
+    endif
+  end block 
+  test_name = 'Can read an array of character strings from file'
   print*, test_name, res
   overall_res = overall_res .and. res
 
