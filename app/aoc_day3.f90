@@ -9,6 +9,8 @@ program main
   character(len=:), allocatable :: fname, contents(:)
   character(len=:), allocatable :: s1, s2
   integer(kind=i4), allocatable :: v1(:), v2(:), tmp_shared_items(:), shared_items(:)
+  integer(kind=i4), allocatable :: badges(:)
+  
 
   ! fname = 'data/test/d3p1.txt'
   fname = 'data/d3p1_input.txt'
@@ -28,11 +30,32 @@ program main
     if (size(tmp_shared_items) > 0) shared_items = [shared_items, tmp_shared_items]
   enddo
     
-  print*, "Number of rucksacks=", nr
-  print*, "Longest list of contents=", max_len
-  print*, "Number of shared items =", size(shared_items)
+  ! print*, "Number of rucksacks=", nr
+  ! print*, "Longest list of contents=", max_len
+  ! print*, "Number of shared items =", size(shared_items)
 
   print*, "Answer day 2 part 1 =", sum(shared_items)
 
-  ! print*, "Answer day 2 part 2 =", sum(my_round_scores)
+  allocate(badges(nr/3))
+  block 
+    integer(kind=i4) :: group
+    integer(kind=i4), allocatable :: a1(:), a2(:), a3(:), shared(:)
+    group = 0
+    do i = 1, nr, 3
+      a1 = string_to_int(contents(i))
+      a2 = string_to_int(contents(i+1))
+      a3 = string_to_int(contents(i+2))
+      group = group + 1
+
+      shared = find_matches(a1, a2)
+      shared = find_matches(shared, a3)
+      if (size(shared) /= 1) then 
+        print*, "Length of shared values is more than one"
+      endif
+
+      badges(group) = shared(1)
+    enddo 
+  endblock
+  ! print*, badges
+  print*, "Answer day 2 part 2 =", sum(badges)
 end program main

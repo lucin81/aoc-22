@@ -1,5 +1,6 @@
 module m_strings
   use m_kinds
+  use stdlib_string_type, only: string_type, scan
   implicit none
   private
   
@@ -44,4 +45,14 @@ contains
       endif
     enddo
   end function string_to_int
+
+  pure function find_common_characters(c1, c2) result(res)
+    !! Returns the common characters in the two strings
+
+    character(len=*), intent(in) :: c1, c2
+    character(len=:), allocatable :: res
+
+    
+
+  end function find_common_characters
 end module m_strings

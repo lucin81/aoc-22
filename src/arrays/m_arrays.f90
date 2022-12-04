@@ -1,6 +1,8 @@
 module m_arrays
   use m_kinds
   use stdlib_sorting, only: sort
+  use stdlib_string_type, only: string_type, char
+  use stdlib_strings, only: count
   implicit none
   private
 
