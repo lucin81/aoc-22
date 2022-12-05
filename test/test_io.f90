@@ -1,6 +1,8 @@
 program test_io
   use m_kinds
-  use m_io, only: nrows, read_txt_1c, read_txt_2c, max_string_len, read_txt_char_array
+  use m_io, only: nrows, read_txt_1c, read_txt_2c, max_string_len, read_txt_char_array, &
+    read_assignemnt_pairs
+  use m_sets, only: set_t
   implicit none
 
   logical :: res, overall_res
@@ -83,6 +85,38 @@ program test_io
     endif 
   end block 
   test_name = 'Can read 2 single character columns with read_txt_2c'
+  print*, test_name, res
+  overall_res = overall_res .and. res
+
+  block 
+    type(set_t), allocatable :: actual(:, :)
+    type(set_t), allocatable :: expected(:, :)
+    integer(kind=i4) :: i
+
+    allocate(expected(6, 2))
+    expected(1, :) = [set_t("2-4"), set_t("6-8")]
+    expected(2, :) = [set_t("2-3"), set_t("4-5")]
+    expected(3, :) = [set_t("5-7"), set_t("7-9")]
+    expected(4, :) = [set_t("2-8"), set_t("3-7")]
+    expected(5, :) = [set_t("6-6"), set_t("4-6")]
+    expected(6, :) = [set_t("2-6"), set_t("4-8")]
+    actual = transpose(read_assignemnt_pairs('data/test/d4p1.txt'))
+
+    res = .true. 
+    do i = 1, size(expected,1)
+      res = res .and. &
+            all(actual(i, 1)%get_bounds() == expected(i, 1)%get_bounds()) .and. &
+            all(actual(i, 2)%get_bounds() == expected(i, 2)%get_bounds())
+    enddo
+    if (.not.res) then 
+      print*, "Printing only the first set..."
+      print*, "Expected:"
+      call expected(1,1)%print()
+      print*, "Actual:"
+      call actual(1,1)%print()
+    endif 
+  end block 
+  test_name = "transpose(read_assignemnt_pairs('data/test/d4p1.txt')) is correct"
   print*, test_name, res
   overall_res = overall_res .and. res
 

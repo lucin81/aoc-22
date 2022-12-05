@@ -1,9 +1,12 @@
 module m_io
   use m_kinds
+  use m_strings, only: split
+  use m_sets, only: set_t
   implicit none
   private
 
-  public :: nrows, read_txt_1c, read_txt_2c, max_string_len, read_txt_char_array
+  public :: nrows, read_txt_1c, read_txt_2c, max_string_len, read_txt_char_array, &
+            read_assignemnt_pairs
 
   interface read_txt_1c
     module procedure :: read_txt_1c_int32
@@ -58,6 +61,30 @@ contains
   !   end do
   !   ncols = ncols - 1
   ! end function ncols
+
+  function read_assignemnt_pairs(fname, sep) result(res)
+    !! Returns the assignments for the camp cleanup
+    character(len=*), intent(in) :: fname
+    type(set_t), allocatable :: res(:, :)
+    character(len=:), allocatable :: assignment1, assignment2
+    character(len=1), optional, intent(in) :: sep
+    character(len=1) :: separator
+    character(len=1024) :: buffer
+    integer(kind=i4) :: iu, i, nr
+
+    separator = ','
+    if (present(sep)) separator = sep
+
+    nr = nrows(fname)
+    allocate (res(2, nr))
+    open (newunit=iu, file=trim(fname), action='read')
+    do i = 1, nr
+      read (iu, '(a)') buffer
+      call split(trim(buffer), separator, assignment1, assignment2)
+      res(:, i) = [set_t(assignment1), set_t(assignment2)]
+    end do
+    close (iu)
+  end function read_assignemnt_pairs
 
   function read_txt_char_array(fname, max_len, nr) result(res)
     !! Returns the length of the longest string in a file
