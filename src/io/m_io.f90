@@ -1,12 +1,13 @@
 module m_io
   use m_kinds
-  use m_strings, only: split
+  use m_strings, only: split, parse_crates
   use m_sets, only: set_t
   implicit none
   private
 
   public :: nrows, read_txt_1c, read_txt_2c, max_string_len, read_txt_char_array, &
-            read_assignemnt_pairs
+            read_assignemnt_pairs, find_first_blank_line, read_nth_line, init_stacks, &
+            read_moves
 
   interface read_txt_1c
     module procedure :: read_txt_1c_int32
@@ -61,6 +62,61 @@ contains
   !   end do
   !   ncols = ncols - 1
   ! end function ncols
+
+  function find_first_blank_line(fname, start_line_opt) result(res)
+    !! Returns the line number of the first blank line starting from start_line_opt
+    !! if start_line_opt is not present start from line 1
+    !! if there are no blank lines in the file return 0
+    character(len=*), intent(in) :: fname
+    integer(kind=i4), intent(in), optional :: start_line_opt
+    integer(kind=i4) :: res
+    integer(kind=i4) :: start_line, i, nr, iu
+    character(len=1024) :: buffer
+
+
+    start_line = 1
+    if (present(start_line_opt)) start_line = start_line_opt
+
+    nr = nrows(fname)
+
+    if (start_line >= nr) error stop "Start line >= number of rows in file"
+    
+    open (newunit=iu, file=trim(fname), action='read')
+      if (start_line > 1 ) then 
+        do i = 1, start_line - 1
+          read(iu, *) ! Skip lines before start line 
+        enddo
+      endif 
+
+      do i = start_line, nr
+        read(iu, '(a)') buffer
+        if (buffer == '') then 
+          res = i
+          return
+        endif
+      enddo
+    close(iu)
+
+    res = 0
+  end function find_first_blank_line
+
+  function read_nth_line(fname, n) result(res)
+    !! Returns a character array with the nth line in fname
+    character(len=*), intent(in) :: fname
+    integer(kind=i4) :: n, i, nr, iu
+    character(len=1024) :: res
+
+    nr = nrows(fname)
+
+    if (n >= nr) error stop "n >= number of rows in file"
+    
+    open (newunit=iu, file=trim(fname), action='read')
+      do i = 1, n - 1
+        read(iu, *) ! Skip until n-1
+      enddo
+      read(iu, '(a)') res
+    close(iu)
+  end function read_nth_line
 
   function read_assignemnt_pairs(fname, sep) result(res)
     !! Returns the assignments for the camp cleanup
@@ -132,4 +188,63 @@ contains
     close (iu)
     res = transpose(tmp)
   end function read_txt_2c
+
+  subroutine init_stacks(stacks, start_row, end_row, fname, crates)
+    !! Read data structure for aoc day5
+    integer(kind=i4), intent(in) :: stacks(:)
+    integer(kind=i4), intent(in) :: start_row, end_row
+    character(len=*), intent(in) :: fname
+    character(len=1), intent(out) :: crates(:,:)
+    
+    integer(kind=i4) :: iu, i, level_index
+    character(len=1024) :: buffer
+
+    open (newunit=iu, file=trim(fname), action='read')
+      if (start_row > 1) then 
+        do i = 1, start_row - 1
+          read(iu, *) ! Skip lines
+        enddo
+      endif
+
+      do i = start_row, end_row
+        read(iu, '(a)') buffer
+        level_index = size(crates,2) - end_row + i
+        call parse_crates(buffer, '[', crates(:, level_index))
+      enddo
+    close(iu)
+  end subroutine init_stacks
+
+  subroutine read_moves(fname, skip, moves)
+    character(len=*), intent(in) :: fname
+    integer(kind=i4), intent(in) :: skip
+    integer(kind=i4), allocatable :: moves(:, :)
+    character(len=1024) :: buffer
+    integer(kind=i4) :: stat, i, index, iu, k, nmoves, idx2
+
+    open (newunit=iu, file=trim(fname), action='read')
+      do i = 1, skip
+        read(iu, *) ! Skip lines
+      enddo
+
+      nmoves = nrows(fname) - skip
+      allocate(moves(nmoves, 3))
+      do i = 1, nmoves
+        read(iu, '(a)') buffer
+        index = scan(trim(buffer), ' ')
+        k = 1
+        do while (index /= 0)
+          buffer(index:index) = '.'
+          idx2 = index + 1
+          do while (buffer(idx2:idx2) == ' ')
+            buffer(idx2:idx2) = '.'
+            idx2 = idx2 + 1
+          enddo
+          ! idx2 = scan(trim(buffer), ' ')
+
+          read(buffer((index+1):), *, iostat=stat) moves(i, k)
+          if (stat == 0) k = k + 1
+          index = scan(trim(buffer), ' ')
+        enddo
+      enddo
+  end subroutine read_moves
 end module m_io

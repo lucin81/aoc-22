@@ -1,6 +1,6 @@
 program test_strings
   use m_kinds
-  use m_strings, only: split_string, string_to_int, split, to_int
+  use m_strings, only: split_string, string_to_int, split, to_int, parse_crates
   implicit none
 
   logical :: res, overall_res
@@ -44,6 +44,19 @@ program test_strings
     res = s1 == '22' .and. s2 == '43'
   end block
   test_name = "split('22-43', '-', s1, s2) gives s1 = '22' and s2 = '43'"
+  print*, test_name, res
+  overall_res = overall_res .and. res
+
+  block
+    character(len=:), allocatable :: str
+    character(len=1) :: expected(3), actual(3)
+
+    str = '[Z] [M] [P]'
+    expected = ['Z', 'M', 'P']
+    call parse_crates(str, '[', actual)
+    res = all(actual == expected)
+  end block
+  test_name = "parse_crates('[Z] [M] [P]', '[') gives ['Z', 'M', 'P']"
   print*, test_name, res
   overall_res = overall_res .and. res
 
