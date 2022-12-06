@@ -1,7 +1,7 @@
 program test_io
   use m_kinds
   use m_io, only: nrows, read_txt_1c, read_txt_2c, max_string_len, read_txt_char_array, &
-    read_assignemnt_pairs
+    read_assignemnt_pairs, find_first_blank_line
   use m_sets, only: set_t
   implicit none
 
@@ -117,6 +117,38 @@ program test_io
     endif 
   end block 
   test_name = "transpose(read_assignemnt_pairs('data/test/d4p1.txt')) is correct"
+  print*, test_name, res
+  overall_res = overall_res .and. res
+
+  block 
+    integer(kind=i4) :: actual, expected
+
+    expected = 5
+    actual = find_first_blank_line('data/test/d5p1.txt')
+
+    res = actual == expected
+    if (.not.res) then 
+      print*, "Expected:", expected
+      print*, "Actual:", actual
+    endif 
+  end block 
+  test_name = "find_first_blank_line('data/test/d5p1.txt') = 5"
+  print*, test_name, res
+  overall_res = overall_res .and. res
+
+  block 
+    integer(kind=i4) :: actual, expected
+
+    expected = 5
+    actual = find_first_blank_line('data/test/d5p1.txt', 3)
+
+    res = actual == expected
+    if (.not.res) then 
+      print*, "Expected:", expected
+      print*, "Actual:", actual
+    endif 
+  end block 
+  test_name = "find_first_blank_line('data/test/d5p1.txt', 3) = 5"
   print*, test_name, res
   overall_res = overall_res .and. res
 

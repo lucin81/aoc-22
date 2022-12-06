@@ -4,7 +4,8 @@ module m_strings
   implicit none
   private
 
-  public :: split_string, string_to_int, split, to_int
+  public :: split_string, string_to_int, split, to_int, string_to_int_array, &
+            parse_crates
 contains
 
   subroutine split(str, separator, string1, string2)
@@ -36,6 +37,26 @@ contains
     end if
   end subroutine split
 
+  subroutine parse_crates(str, sep, res)
+    !! Parse string into stack of crates
+    character(len=*), intent(in) :: str
+    character(len=1), intent(in) :: sep
+    character(len=1), intent(inout) :: res(:)
+
+    character(len=:), allocatable :: tmp
+    integer(kind=i4) :: index, stack_id
+
+    tmp = trim(str)
+    index = scan(trim(tmp), sep)
+    do while (index /= 0)
+      stack_id = index/4 + 1
+      res(stack_id) = str((index + 1):(index + 1))
+      tmp(index:index) = '|'
+
+      index = scan(trim(tmp), sep)
+    end do
+  end subroutine parse_crates
+
   elemental function to_int(str) result(int)
     !! Convert a string to an integer
     character(len=*), intent(in) :: str
@@ -46,6 +67,33 @@ contains
 
     if (stat /= 0) error stop 'Error in string conversion to int'
   end function to_int
+
+  function string_to_int_array(str, sep) result(res)
+    !! Return an array of integer by parsing str
+    !> The string to parse
+    character(len=*), intent(in) :: str
+    !> The number of characters per value in the string (including white space)
+    character(len=1), intent(in) :: sep
+    integer(kind=i4), allocatable :: res(:)
+
+    character(len=:), allocatable :: tmp
+    integer(kind=i4) :: n, idx, k, val, idx2, stat
+
+    allocate(res(0))
+    tmp = trim(adjustl(str))
+    ! Try to read from the beginning 
+    read (tmp, *, iostat=stat) val
+    if (stat == 0) res = [res, val] 
+
+    idx = scan(tmp, ' ')
+    do while (idx /= 0)
+      tmp = trim(adjustl(tmp(idx+1:)))
+      read (tmp, *, iostat=stat) val
+
+      if (stat == 0) res = [res, val] 
+      idx = scan(tmp, ' ')
+    end do
+  end function string_to_int_array
 
   pure subroutine split_string(string, s1, s2)
     !! Takes a string and returns the two substrings obtained by
