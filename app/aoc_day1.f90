@@ -24,6 +24,7 @@ program main
   enddo 
 
   print*, "Answer day 1 part 1 =", maxval(calories_per_elf)
+  print*, "change"
 
   call sort(calories_per_elf, reverse=.true.)
 
